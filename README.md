@@ -31,79 +31,6 @@ This projects consists of 2 key parts:
 1. **Development of a command line application**: the code developed in the previous part of this project is converted into an application (consisting of several scripts) that can be run from the command line and used to train an image classifier on any image dataset, and/or use a trained image classifier for image category prediction. Please refer to the instructions below regarding how to use this command line application.
 
 
-# Installation
-Clone this GitHub repository:
-
-```
-git clone https://github.com/perkinsml/flower-image-classifier.git
-```
-
-
-## Dependencies
-Package versions included:
-* Python 3.5+ (I used Python 3.6.3)
-* Torch: 0.4.0
-* TorchVision: 0.2.1
-* NumPy: 1.12.1
-* Matplotlib: 2.1.0
-* Pillow: 5.2.1
-
-
-
-## Using the command line application
-Run the commands in the project's **scripts** folder described below to use the command line application.
-
-<ol>
-<li>
-Train a deep learning neural network on an image data set and save the model as a checkpoint, by executing the <code>train.py</code> script from the command line in the **scripts** folder, as per the instructions below.
-<p>  Basic usage: <code>python train.py data_directory</code>, where *data_directory* is the parent directory containing the images used for model training, validation and testing.  An example folder structure for the training, validation and testing image data is displayed below:
-<pre><code>
-├── data_directory                          # Parent folder of image dataset
-       ├── train                            # Parent folder of images used for model training
-       ├── valid                            # Parent folder of images used for model validation
-       └── test                             # Parent folder of images used for model testing
-</code></pre>
-<p> The training loss, validation loss and validation accuracy are printed to screen as the model trains - see example below:</p>
-
-![metrics display example](https://github.com/perkinsml/flower-image-classifier/blob/master/images/metrics_display_example.png)
-
-<p>After training is complete, the accuracy on the (hold-out) test set will be calculated and printed to screen.  The model checkpoint will then be saved to the same folder as the <code>train.py</code> script.</p>
-<p>The default parameters for the <code>train.py</code> script can be modified by specifying one or more of the optional parameters listed below when executing the <code>train.py</code> script from the command line.
-
-  <ul>
-      <li>TorchVision's pre-trained model architecture used for image feature detection layers.  Note, only VGG architectures are permitted (default = VGG11): <code>python train.py data_dir --arch vgg13</code></li>
-      <li>Hidden layer architecture for image classification layer (default = [1024, 512, 256]): <code>python train.py data_dir --hidden_layers 2048 1024 512</code></li>
-      <li>Number of training epochs (default = 20): : <code>python train.py data_dir --epochs 50</code></li>
-      <li>Learning rate for the classification layer (default = 0.001): <code>python train.py data_dir --lr 0.05</code></li>
-      <li>Drop-out probability for nodes in classification layer (default = 0.5): <code>python train.py data_dir --drop_out 0.35</code></li>
-      <li>Device for model training (default = cpu): <code>python train.py data_dir --device GPU</code></li>
-      <li>Folder to save model checkpoint to (default = same folder as the <code>train.py</code> script): <code>python train.py data_dir --save_dir save_directory</code></li>  
-  </ul>
-
-<br> For example, to train an image classifier using TorchVision's pre-trained VGG13 model architecture feeding into a classification layer consisting of 4 hidden layers with 256, 128, 64 and 32 nodes respectively, on a GPU for 50 epochs with a learning rate of 0.005 and drop out probability of 0.35, I'd execute the command below at command line.  The command below would use the images within the animals folder (as per the directory structure example above) and save the model checkpoint to the models folder.
-
-```
-python train.py animals --arch vgg13 --hidden_layers 256 128 64 32 --epochs 50 --lr 0.005 --drop_out 0.35 --device GPU --save_dir models
-```
-</li>
-<li>
-To use a pre-trained image classifier for inference:
-
-   ```
-   python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl
-   ```
-
-Re-running the ETL and ML pipelines is not necessary to start the web app.  
-
-After following the installation instructions above, you can simply execute the following commands to run the web app., regardless of whether or not you choose to re-run the ETL and ML pipelines:
-1. From the app directory:
-    ```
-    export FLASK_APP=run.py
-    python -m flask run
-    ```
-1. Go to the link displayed in the command line.  For me, this is: http://127.0.0.1:5000/
-
-
 ## File Descriptions
 
 <pre><code>
@@ -115,29 +42,106 @@ After following the installation instructions above, you can simply execute the 
 |
 ├── image_classifier_project.html        # The HTML version of the image_classifier_project.ipynb
 |
-├── checkpoint.pth                       # The model checkpoint trained, evaluated and saved within the image_classifier_project.ipynb
-
-
-
 ├── scripts
-│   ├── train.py                         # A Python script which can be executed from the command line (see instructions above) to train a new network on a dataset and save the model as a checkpoint
-│   ├── predict.py                       # A Python script which uses a trained network to predict the class for an input image
+│   ├── train.py                         # A Python script which can be executed from the command line (see instructions below) to train a new network on a dataset and save the model as a checkpoint
+│   ├── predict.py                       # A Python script which can be executed from the command line (see instructions below) to use a pre-trained network to predict the class for an input image
 │   ├── helpers_data_prep.py             # A Python script containing helper functions required for image pre-processing (including transforms and augmentations)
-|   └── helpers_modeling.py              # A Python script containing helper functions for model definition, training, validation, testing and inference
+|   ├── helpers_modeling.py              # A Python script containing helper functions for model definition, training, validation, testing and inference
+|   └── cat_to_name.json                 # A JSON for mapping category ids to category names
 |
-├── models
-│   ├── train_classifier.py              # ML pipeline script
-|   ├── classifier.pkl                   # Pickled classification model
-|   └── ML Pipeline Preparation.ipynb    # Notebook demonstrating ML pipeline build, train and test
-|
+├──images                                # A folder of images used on this page
 |
 └── README.md
 </code></pre>
 
-# Machine Learning considerations
-The dataset includes 36 message categories - one of which ('child_alone') is not relevant to any messages.  After testing a range of classification algorithms, I found the LinearSVC model to achieve the best results.  The solver for this algorithm requires at least 2 classes in the data, so the 'child_alone' category was dropped from the data.
 
-As shown in the web app and the *ML Pipeline Preparation.ipynb* notebook, the dataset is imbalanced and just 3 of the remaining 35 categories have more than 20% of messages assigned to them. Given this class imbalance, accuracy was not the most robust metric for evaluating the model performance.  Given the use case and hence the importance of recall (i.e. the need to identify messages relevant for each category) in this situation, I elected to use a the mean F2 score across all 35 categories to evaluate model performance.   
+# Flower Dataset Image Classification results
+As can be seen in image_classifier_project.ipynb, an accuracy of 0.74 is achieved on a hold-out test set of 819 images of flowers.  The neural network architecture consists of a pre-trained VGG11 model feeding into a classification model with 3 hidden layers - with 1024, 512 and 256 nodes respectively.  A learning rate of 0.001 and a drop out probability of 0.35 is used to training the model.
+
+The model is trained with 6,552 images that have been resized and normalised (as required by the pre-trained networks), and randomly augmented.  Having achieved an accuracy of 0.75 on the 818 images in the validation set, the model generalises well to the test set.
+
+Below is an example of the inference results for the test images displayed at the top of this page.
+![inference probability example](https://github.com/perkinsml/flower-image-classifier/blob/master/images/inference_probability_example.png)
+
+
+
+# Command Line Application
+
+## Installation|
+Clone this GitHub repository:
+
+```
+git clone https://github.com/perkinsml/flower-image-classifier.git
+```
+
+## Dependencies
+Package versions included:
+* Python 3.5+ (I used Python 3.6.3)
+* Torch: 0.4.0
+* TorchVision: 0.2.1
+* NumPy: 1.12.1
+* Matplotlib: 2.1.0
+* Pillow: 5.2.1
+
+
+## Using the command line application
+<p>The command line application provides the options to train a new neural network, or use an existing neural network checkpoint for the prediction of an image's category.
+
+<p>Run the commands described below in the project's <b>scripts</b> folder to use the command line application.
+
+<ol>
+<li>
+<p>Train a deep learning neural network on an image data set and save the model as a checkpoint, by executing the <code>train.py</code> script from the command line in the <b>scripts</b> folder, as per the instructions below.
+
+<p>Basic usage: <code>python train.py data_directory</code>, where <i>data_directory</i> is the parent directory containing the images used for model training, validation and testing.  Note, <i>data_directory</i> is a mandatory argument when running the <code>train.py</code> script.  An example folder structure for the training, validation and testing image data is displayed below:
+<pre><code>
+├── data_directory                          # Parent folder of image dataset
+    ├── train                            # Parent folder of images used for model training
+    ├── valid                            # Parent folder of images used for model validation
+    └── test                             # Parent folder of images used for model testing
+</code></pre>
+
+<p> The training loss, validation loss and validation accuracy are printed to screen as the model trains - see example below:</p>
+
+![metrics display example](https://github.com/perkinsml/flower-image-classifier/blob/master/images/metrics_display_example.png)
+
+<p>After training is complete, the accuracy on the (hold-out) test set will be calculated and printed to screen.  The model checkpoint will then be saved to the same folder as the <code>train.py</code> script.
+<p>The default parameters for the <code>train.py</code> script can be modified by specifying one or more of the optional parameters listed below when executing the <code>train.py</code> script from the command line.
+
+  <ul>
+      <li>TorchVision's pre-trained model architecture used for image feature detection layers.  Note, only VGG architectures are supported (default = VGG11): <code>python train.py data_dir --arch vgg13</code></li>
+      <li>Hidden layer architecture for image classification layer (default = [1024, 512, 256]): <code>python train.py data_dir --hidden_layers 2048 1024 512</code></li>
+      <li>Number of training epochs (default = 20): : <code>python train.py data_dir --epochs 50</code></li>
+      <li>Learning rate for the classification layer (default = 0.001): <code>python train.py data_dir --lr 0.05</code></li>
+      <li>Drop-out probability for nodes in classification layer (default = 0.5): <code>python train.py data_dir --drop_out 0.35</code></li>
+      <li>Device for model training (default = cpu): <code>python train.py data_dir --device GPU</code></li>
+      <li>Folder to save model checkpoint to (default = same folder as the <code>train.py</code> script): <code>python train.py data_dir --save_dir save_directory</code></li>  
+  </ul>
+
+<br> For example, to train an image classifier using TorchVision's pre-trained VGG13 model architecture feeding into a classification layer consisting of 4 hidden layers with 256, 128, 64 and 32 nodes respectively, on a GPU for 50 epochs with a learning rate of 0.005 and drop out probability of 0.35, I'd execute the command below at the command line.  The command below would use the images within the <i>animals</i> folder (as per the directory structure example above) and save the model checkpoint to the <i>models</i> folder.
+
+```
+python train.py animals --arch vgg13 --hidden_layers 256 128 64 32 --epochs 50 --lr 0.005 --drop_out 0.35 --device GPU --save_dir models
+```
+</li>
+<li>
+<p>Predict the category of an image using a pre-trained neural network, by executing the <code>predict.py</code> script from the command line in the <b>scripts</b> folder, as per the instructions below.
+
+<p>Basic usage: <code>python predict.py path_to_image path_to_checkpoint</code>, where <i>path_to_image</i> is the file path to the image for inference and <i>path_to_checkpoint</i> is the file path to the pre-trained image classifier to be used for inference.  Note, <i>path_to_image</i> and <i>path_to_checkpoint</i> are both mandatory arguments when running the <code>predict.py</code> script.
+
+<p>By default, the top 5 most likely image classes and their probabilities will be printed to screen.  An example of this output is displayed below.
+
+![inference display example](https://github.com/perkinsml/flower-image-classifier/blob/master/images/inference_display_example.png)
+
+<p>The default parameters for the <code>predict.py</code> script can be modified by specifying one or more of the optional parameters listed below when executing the <code>predict.py</code> script from the command line.
+
+  <ul>
+      <li><Device for model training (default = cpu): <code>python predict.py path_to_image path_to_checkpoint --device GPU</code></li>
+      <li>Top k probabilities and classes to predict (default = 5): <code>python predict.py path_to_image path_to_checkpoint --top_k 10</code></li>
+      <li>File name for mapping of category classes to names (default = 'cat_to_name.json'): <code>python predict.py path_to_image path_to_checkpoint --category_names mapping.json</code></li>
+  </ul>
+
+
 
 # Author
 [Matthew Perkins](https://github.com/perkinsml)
@@ -147,17 +151,4 @@ As shown in the web app and the *ML Pipeline Preparation.ipynb* notebook, the da
 
 # Acknowledgements
 * [Udacity](https://www.udacity.com/) for designing the Project
-* [Figure8 (now known as Appen)](https://appen.com/) for collating and labelling the dataset
-
-
-
-# Web App Screenshots
-Below is an example of the categorisation results displayed by the web app for the message:
-
->A massive fire has broken out after the storm. Homes are destroyed<br> and people have been left homeless.  We need doctors and clothing.
-
-![results summary image](https://github.com/perkinsml/disaster_response_pipeline/blob/master/images/web_app_results_example.png)
-
-The main page of the web app displays some visualisations of the message data provided by Figure Eight
-
-![data charts image](https://github.com/perkinsml/disaster_response_pipeline/blob/master/images/data_overview.png)
+* [Visual Geometry Group](https://www.robots.ox.ac.uk/~vgg/) for providing access to the labelled Flowers dataset
