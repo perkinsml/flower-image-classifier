@@ -53,7 +53,9 @@ Package versions included:
 ## Using the command line application
 Run the commands in the project's **scripts** folder described below to use the command line application.
 
-1. Train a deep learning neural network on an image data set and save the model as a checkpoint, by executing the <code>train.py</code> script from the command line in the **scripts** folder, as per the instructions below.
+<ol>
+<li>
+Train a deep learning neural network on an image data set and save the model as a checkpoint, by executing the <code>train.py</code> script from the command line in the **scripts** folder, as per the instructions below.
 <p>  Basic usage: <code>python train.py data_directory</code>, where *data_directory* is the parent directory containing the images used for model training, validation and testing.  An example folder structure for the training, validation and testing image data is displayed below:
 <pre><code>
 ├── data_directory                          # Parent folder of image dataset
@@ -61,7 +63,8 @@ Run the commands in the project's **scripts** folder described below to use the 
        ├── valid                            # Parent folder of images used for model validation
        └── test                             # Parent folder of images used for model testing
 </code></pre>
-<p> The training loss, validation loss and validation accuracy are printed to screen as the model trains - see example below:
+<p> The training loss, validation loss and validation accuracy are printed to screen as the model trains - see example below:</p>
+
 ![metrics display example](https://github.com/perkinsml/flower-image-classifier/blob/master/images/metrics_display_example.png)
 
 <p>After training is complete, the accuracy on the (hold-out) test set will be calculated and printed to screen.  The model checkpoint will then be saved to the same folder as the <code>train.py</code> script.</p>
@@ -79,12 +82,12 @@ Run the commands in the project's **scripts** folder described below to use the 
 
 <br> For example, to train an image classifier using TorchVision's pre-trained VGG13 model architecture feeding into a classification layer consisting of 4 hidden layers with 256, 128, 64 and 32 nodes respectively, on a GPU for 50 epochs with a learning rate of 0.005 and drop out probability of 0.35, I'd execute the command below at command line.  The command below would use the images within the animals folder (as per the directory structure example above) and save the model checkpoint to the models folder.
 
-
-    ```
-    python train.py animals --arch vgg13 --hidden_layers 256 128 64 32 --epochs 50 --lr 0.005 --drop_out 0.35 --device GPU --save_dir models
-    ```
-
-1. To use a pre-trained image classifier for inference:
+```
+python train.py animals --arch vgg13 --hidden_layers 256 128 64 32 --epochs 50 --lr 0.005 --drop_out 0.35 --device GPU --save_dir models
+```
+</li>
+<li>
+To use a pre-trained image classifier for inference:
 
    ```
    python models/train_classifier.py data/DisasterResponse.db models/classifier.pkl
@@ -127,18 +130,6 @@ After following the installation instructions above, you can simply execute the 
 |   ├── classifier.pkl                   # Pickled classification model
 |   └── ML Pipeline Preparation.ipynb    # Notebook demonstrating ML pipeline build, train and test
 |
-├── dr_utils
-|   └── custom_functions.py              # Custom functions used by  classification model
-|
-├── app
-│   ├── run.py                           # Flask file that runs the app
-│   └── templates
-│       ├── master.html                  # Main page of web app
-│       └── go.html                      # Classification results page of web app
-│
-├── images                               # A folder of screen shots used on this page
-|
-├── requirements.txt                     # A list of required libraries and their versions
 |
 └── README.md
 </code></pre>
