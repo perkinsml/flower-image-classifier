@@ -2,52 +2,53 @@
 
 1. [Background](#background)
 1. [Project Overview](#project-overview)
-1. [Using the command line application](#using-the-command-line-application)
-1. [Installation](#installation)
+1. [Data](#data)
+1. [File Descriptions](#file-descriptions)
+1. [Flower data classification results](#flower-dataset-image-classification-results)
+1. [Command Line Application](#command-line-application)
+    * [Installation](#installation)]
     * [Dependencies](#dependencies)
-    * [Executing the program](#executing-the-program)
-    * [File Descriptions](#file-descriptions)
-1. [Machine Learning considerations](#machine-learning-considerations)
+    * [Using the command line application](#using-the-command-line-application)
 1. [Author](#author)
 1. [License](#license)
 1. [Acknowledgements](#acknowledgements)
-1. [Web App Screenshots](#web-app-screenshots)
-
 
 
 # Background
-ML algorithms are being incorporated into more and more every day applications, such as mobile phones and watches.  Enabling image classification from a smart phone app (for example), typically requires training a deep learning Neural Network on hundreds of thousands of images to build an accurate classifier that can be used as part of the application's architecture.  Software Developers are then required to deploy this model in such a way that users can efficiently leverage these trained models to perform inference/prediction/image classification (for example) from their everyday devices.  
+ML algorithms are being incorporated into more and more everyday applications, such as mobile phones and watches.  Enabling image classification from a smart phone app (for example), typically requires training a deep learning Neural Network on thousands of images to build an accurate classifier that can be used as part of the application's architecture.  Software Developers are then required to deploy this model in such a way that users can efficiently leverage these trained models to perform inference/prediction/image classification (for example) from their everyday devices.  
 
 # Project Overview
 This project uses PyTorch to train an image classifier to recognise different species of flowers.  Such a classifier could be used within an app on a mobile phone to inform a user of the name of the flower their camera is looking at.  
 
-The dataset used to build this classifier is the [102 Flower Category Dataset](https://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html).  As the name suggests, this dataset consists of 102 different flower categories (which are commonly occurring in the United Kingdom), with each flower class consisting of between 40 and 258 images.  Some of these flower categories have large variations within the category and several categories are very similar.  Note, this flower image data set is too large to upload to GitHub, so is not included in this repo.  The data can be accessed [here](https://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html), if required.  Examples of the flower images are displayed below:  
+This projects consists of 2 key parts:
+
+1. **Development of an image classifier trained with the *102 Flower Catagory Dataset* in a Jupyter Notebook**: Leveraging Transfer Learning, this deep learning neural network consists of a pre-trained neural network (trained on the ImageNet dataset) to detect and extract features from the images, which then feeds forward into a custom built and trained classification layer. This image classifier is  defined, trained and evaluated within a Jupyter Notebook.
+1. **Development of a command line application**: the code developed in the previous part of this project is converted into an application (consisting of several scripts) that can be run from the command line and used to train an image classifier on any image dataset, and/or use a trained image classifier for image category prediction. Please refer to the [Command Line Application section](#command-line-application) for  instructions regarding how to use this command line application.
+
+# Data
+The dataset used to build the image classifier is the [102 Flower Category Dataset](https://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html).  As the name suggests, this dataset consists of 102 different flower categories (which are commonly occurring in the United Kingdom), with each flower class consisting of between 40 and 258 images.  Some of these flower categories have large variations within the category and several categories are very similar.  The data consists of 6,552 training images, 818 validation images and 819 (hold-out) test images.  Note, this flower image data set is too large to upload to GitHub, so is not included in this repo.  The data can be accessed [here](https://www.robots.ox.ac.uk/~vgg/data/flowers/102/index.html), if required.  
+
+Examples of the flower images are displayed below:  
 
 ![flower images example](https://github.com/perkinsml/flower-image-classifier/blob/master/images/flowers_example.png)
 
-This projects consists of 2 key parts:
-
-1. **Development of an image classifier on the *102 Flower Catagory Dataset* in a Jupyter Notebook**: Leveraging Transfer Learning, this deep learning neural network consists of a pre-trained neural network (trained on the ImageNet dataset) to detect and extract features from the images, which then feeds forward into a custom built and trained classification layer. This image classifier is  defined, trained and evaluated within this Jupyter Notebook.
-1. **Development of a command line application**: the code developed in the previous part of this project is converted into an application (consisting of several scripts) that can be run from the command line and used to train an image classifier on any image dataset, and/or use a trained image classifier for image category prediction. Please refer to the instructions below regarding how to use this command line application.
-
-
-## File Descriptions
+# File Descriptions
 
 <pre><code>
 |
 ├── image_classifier_project.ipynb       # Jupyter Notebook with the code required to:
 |                                        # - load and preprocess the image data
 |                                        # - build and train a classifier leveraging transfer learning techniques
-|                                        # - use the trained classifier to predict image content
+|                                        # - use the trained classifier to predict the image category
 |
 ├── image_classifier_project.html        # The HTML version of the image_classifier_project.ipynb
 |
-├── scripts
-│   ├── train.py                         # A Python script which can be executed from the command line (see instructions below) to train a new network on a dataset and save the model as a checkpoint
-│   ├── predict.py                       # A Python script which can be executed from the command line (see instructions below) to use a pre-trained network to predict the class for an input image
-│   ├── helpers_data_prep.py             # A Python script containing helper functions required for image pre-processing (including transforms and augmentations)
-|   ├── helpers_modeling.py              # A Python script containing helper functions for model definition, training, validation, testing and inference
-|   └── cat_to_name.json                 # A JSON for mapping category ids to category names
+├── scripts                              # A folder of Python scripts for the command line application
+│   ├── train.py                         # A script which can be executed from the command line (see instructions below) to train a new network on a dataset and save the model as a checkpoint
+│   ├── predict.py                       # A script which can be executed from the command line (see instructions below) to use a pre-trained network to predict the class of a specified image
+│   ├── helpers_data_prep.py             # A script containing helper functions required for image pre-processing (including transforms and augmentations)
+|   ├── helpers_modeling.py              # A script containing helper functions for model definition, training, validation, testing and inference
+|   └── cat_to_name.json                 # A JSON file for mapping category ids to category names
 |
 ├──images                                # A folder of images used on this page
 |
@@ -56,7 +57,7 @@ This projects consists of 2 key parts:
 
 
 # Flower Dataset Image Classification results
-As can be seen in image_classifier_project.ipynb, an accuracy of 0.74 is achieved on a hold-out test set of 819 images of flowers.  The neural network architecture consists of a pre-trained VGG11 model feeding into a classification model with 3 hidden layers - with 1024, 512 and 256 nodes respectively.  A learning rate of 0.001 and a drop out probability of 0.35 is used to training the model.
+As can be seen in image_classifier_project.ipynb, an accuracy of 0.74 is achieved on a hold-out test set of 819 flower images.  The neural network architecture consists of a pre-trained VGG11 model feeding into a classification model with 3 hidden layers - with 1024, 512 and 256 nodes respectively.  A learning rate of 0.001 and a drop out probability of 0.35 is used in model training.
 
 The model is trained with 6,552 images that have been resized and normalised (as required by the pre-trained networks), and randomly augmented.  Having achieved an accuracy of 0.75 on the 818 images in the validation set, the model generalises well to the test set.
 
