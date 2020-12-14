@@ -66,7 +66,7 @@ As can be seen in image_classifier_project.ipynb, an accuracy of 0.74 is achieve
 The model is trained with 6,552 images that have been resized and normalised (as required by the pre-trained networks), and randomly augmented.  Having achieved an accuracy of 0.75 on the 818 images in the validation set, the model generalises well to the test set.
 
 Below is an example of the inference results for the test images displayed at the top of this page.
-<p>
+
 ![inference probability example](https://github.com/perkinsml/flower-image-classifier/blob/master/images/inference_probability_example.png)
 
 
